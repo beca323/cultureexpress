@@ -117,13 +117,15 @@ nav {
   .img {
     // height: 200px;
     // width: 200px;
+    width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
     overflow: hidden;
     img {
       width: 100%;
-      height: fit-content;
+      aspect-ratio: 1/1;
+      // height: fit-content;
     }
   }
   .EventName {
@@ -151,5 +153,13 @@ footer {
 @media (max-width: 520px) {
   * {
     font-size: 80%;
+  }
+}
+@media (max-width: 400px) {
+  * {
+    font-size: 75%;
+  }
+  .OneEventCard {
+    grid-template-columns: 1fr 3fr;
   }
 }
