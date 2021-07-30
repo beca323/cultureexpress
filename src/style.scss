@@ -64,15 +64,14 @@ nav {
     height: 500px;
     display: grid;
     justify-content: center;
-    align-content: center;
+    align-content: end;
+    padding-bottom: 50px;
     div {
-      font-size: 1.3rem;
+      font-size: 1.1rem;
       line-height: 4rem;
       font-weight: bold;
     }
     form {
-      display: flex;
-      align-items: center;
       input,
       select {
         @extend %rrr-input;
@@ -80,6 +79,10 @@ nav {
         box-shadow: 0 0 2px $main-text-color;
         color: #222222;
         background-color: rgba(250, 250, 250, 0.4);
+        cursor: pointer;
+      }
+      input[type="text"] {
+        cursor: initial;
       }
       input[type="submit"],
       option {

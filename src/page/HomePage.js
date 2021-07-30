@@ -11,34 +11,48 @@ export default function HomePage() {
   const [mydata, setMydata] = useState([])
   const [conditionDate, setConditionDate] = useState(todayDate)
   const [conditionType, setConditionType] = useState('')
+  const [conditionManyDays, setConditionManyDays] = useState(false)
+  const [conditionKeywords, setConditionKeywords] = useState('')
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    console.log(conditionDate, conditionType)
-    filterData(conditionDate, conditionType)
+    filterData(conditionDate, conditionType, conditionKeywords)
   }
 
-  const filterData = (conditionDate, conditionType) => {
-    getData().then(data => {
-      const events = data.filter((e) => {
-        const durationEndNumber = Number(e.DurationEnd.replace('-', '').replace('-', ''))
-        return (e.EventTypeID.includes(conditionType) && durationEndNumber > conditionDate)
+  const filterData = (conditionDate, conditionType, conditionKeywords) => {
+    console.log(conditionKeywords)
+    if (conditionManyDays == true) {
+      getData().then(data => {
+        const events = data.filter((e) => {
+          const durationEndNumber = Number(e.DurationEnd.replace('-', '').replace('-', ''))
+          return ((e.EventName.includes(conditionKeywords) || e.BriefIntroduction.includes(conditionKeywords))
+            && e.EventTypeID.includes(conditionType)
+            && durationEndNumber > conditionDate)
+        })
+        setMydata([...events])
       })
-      // console.log(events)
-      setMydata([...events])
-    })
+    } else {
+      getData().then(data => {
+        const events = data.filter((e) => {
+          const durationEndNumber = Number(e.DurationEnd.replace('-', '').replace('-', ''))
+          const durationStartNumber = Number(e.DurationStart.replace('-', '').replace('-', ''))
+          return ((e.EventName.includes(conditionKeywords) || e.BriefIntroduction.includes(conditionKeywords))
+            && e.EventTypeID.includes(conditionType)
+            && durationEndNumber > conditionDate && durationStartNumber < conditionDate)
+        })
+        setMydata([...events])
+      })
+    }
   }
 
   const setBookingDate = () => {
     let today = new Date()
-
     let year = today.getFullYear()
     let month = today.getMonth() + 1
     if (month < 10) { month = '0' + month }
     let date = today.getDate()
     if (date < 10) { date = '0' + date }
     let defaultDateValue = year + '-' + month + '-' + date
-
     let calendar = document.querySelector('#searchingDate')
     calendar.setAttribute('value', defaultDateValue)
     // calendar.setAttribute('min', defaultDateValue)
@@ -46,15 +60,24 @@ export default function HomePage() {
   }
 
   const handleDateCondition = (e) => {
-    // console.log(Number(e.target.value.replace('-', '').replace('-', '')))
-    // console.log(todayDate)
     setConditionDate(Number(e.target.value.replace('-', '').replace('-', '')))
+    document.getElementById('manySearchingDate').value = 1
   }
   const handleTypeCondition = (e) => {
     setConditionType(e.target.value)
   }
+  const handleManyDayCondition = (e) => {
+    if (e.target.value == 1) {
+      setConditionManyDays(false)
+    } else {
+      setConditionManyDays(true)
+    }
+  }
+  const handleChangeKeywords = (e) => {
+    setConditionKeywords(e.target.value)
+  }
   useEffect(() => {
-    filterData(todayDate, '')
+    filterData(todayDate, '', '')
     setBookingDate()
   }, [])
   return (
@@ -62,22 +85,35 @@ export default function HomePage() {
       <div className="searching-area">
         <div>設定篩選條件</div>
         <form action="" onSubmit={handleSubmit}>
-          日期：<input type="date" id="searchingDate" onChange={handleDateCondition} />
-          類型：
-          <select onChange={handleTypeCondition}>
-            <option value="">選擇類型</option>
-            <option value="展覽">展覽</option>
-            <option value="講座">講座</option>
-            <option value="表演藝術">表演藝術</option>
-            <option value="電影">電影</option>
-            <option value="城市生活圈">城市生活圈</option>
-          </select>
-          <input type="submit" value="查詢" />
+          <div>
+            日期：<input type="date" id="searchingDate" onChange={handleDateCondition} />
+            <select id="manySearchingDate" onChange={handleManyDayCondition}>
+              <option value="1">當日</option>
+              <option value="0">不指定</option>
+            </select>
+          </div>
+          <div>
+            尋找：<input type="text" placeholder="輸入關鍵字" onChange={handleChangeKeywords} />
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              類型：
+              <select onChange={handleTypeCondition}>
+                <option value="">選擇類型</option>
+                <option value="展覽">展覽</option>
+                <option value="講座">講座</option>
+                <option value="表演藝術">表演藝術</option>
+                <option value="電影">電影</option>
+                <option value="城市生活圈">城市生活圈</option>
+              </select>
+            </div>
+            <input type="submit" value="查詢" style={{ fontSize: 'initial' }} />
+          </div>
         </form>
       </div>
       <div className="homepage-content">
         <div className="title">
-          本日活動
+          當日活動
         </div>
         <TodayEvent mydata={mydata} />
         {/* <div className="title">本月活動</div> */}
