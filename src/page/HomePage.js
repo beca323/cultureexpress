@@ -77,7 +77,7 @@ export default function HomePage() {
       </div>
       <div className="homepage-content">
         <div className="title">
-          近30日活動
+          本日活動
         </div>
         <TodayEvent mydata={mydata} />
         {/* <div className="title">本月活動</div> */}
