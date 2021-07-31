@@ -83,7 +83,7 @@ export default function HomePage() {
   return (
     <div className="HomePage">
       <div className="searching-area">
-        <div>設定篩選條件</div>
+        <div>自訂篩選條件</div>
         <form action="" onSubmit={handleSubmit}>
           <div>
             日期：<input type="date" id="searchingDate" onChange={handleDateCondition} />
@@ -99,7 +99,7 @@ export default function HomePage() {
             <div>
               類型：
               <select onChange={handleTypeCondition}>
-                <option value="">選擇類型</option>
+                <option value="">全部類型</option>
                 <option value="展覽">展覽</option>
                 <option value="講座">講座</option>
                 <option value="表演藝術">表演藝術</option>
