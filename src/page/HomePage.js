@@ -3,24 +3,40 @@ import React, { useEffect, useState } from 'react'
 // component
 import TodayEvent from '../component/TodayEvent'
 import { getData } from '../culturedata'
+import PageNumConponent from '../component/PageNumConponent'
+import SearchingArea from '../component/SearchingArea'
 
 const today = new Date()
-const todayDate = Number(today.getFullYear() + '' + (today.getMonth() < 9 ? '0' + (today.getMonth() + 1) : today.getMonth() + 1) + '' + today.getDate())
+const todayDate = Number(today.getFullYear() + ''
+  + (today.getMonth() < 9 ? '0' + (today.getMonth() + 1) : today.getMonth() + 1) + ''
+  + (today.getDate() < 9 ? '0' + today.getDate() : today.getDate()))
+
+const ONE_PAGE_COUNTS = 6
 
 export default function HomePage() {
   const [mydata, setMydata] = useState([])
+  const [onePageData, setOnePageData] = useState([])
   const [conditionDate, setConditionDate] = useState(todayDate)
   const [conditionType, setConditionType] = useState('')
   const [conditionManyDays, setConditionManyDays] = useState(false)
   const [conditionKeywords, setConditionKeywords] = useState('')
+  const [nowPage, setNowPage] = useState(0)
 
+  const PAGE_COUNTS = Math.floor(mydata.length / ONE_PAGE_COUNTS) + 1
+  const PAGE_ARRAY = [...Array(PAGE_COUNTS).keys()]
+
+  const handleChangePage = (e) => {
+    // const clickNumber = e.target.innerHTML - 1
+    const clickNumber = e.target.innerHTML - 1
+    setNowPage(clickNumber)
+    setOnePageData(mydata.slice(0, 6))
+    console.log(mydata.slice(0, 6))
+  }
   const handleSubmit = (e) => {
     e.preventDefault()
     filterData(conditionDate, conditionType, conditionKeywords)
   }
-
   const filterData = (conditionDate, conditionType, conditionKeywords) => {
-    console.log(conditionKeywords)
     if (conditionManyDays == true) {
       getData().then(data => {
         const events = data.filter((e) => {
@@ -30,6 +46,9 @@ export default function HomePage() {
             && durationEndNumber > conditionDate)
         })
         setMydata([...events])
+        return [...events]
+      }).then((result) => {
+        setOnePageData(result.slice(0, 6))
       })
     } else {
       getData().then(data => {
@@ -41,10 +60,12 @@ export default function HomePage() {
             && durationEndNumber > conditionDate && durationStartNumber < conditionDate)
         })
         setMydata([...events])
+        return [...events]
+      }).then((result) => {
+        setOnePageData(result.slice(0, result.length > 6 ? 6 : result.length))
       })
     }
   }
-
   const setBookingDate = () => {
     let today = new Date()
     let year = today.getFullYear()
@@ -58,7 +79,6 @@ export default function HomePage() {
     // calendar.setAttribute('min', defaultDateValue)
 
   }
-
   const handleDateCondition = (e) => {
     setConditionDate(Number(e.target.value.replace('-', '').replace('-', '')))
     document.getElementById('manySearchingDate').value = 1
@@ -79,45 +99,28 @@ export default function HomePage() {
   useEffect(() => {
     filterData(todayDate, '', '')
     setBookingDate()
+
   }, [])
   return (
     <div className="HomePage">
-      <div className="searching-area">
-        <div>自訂篩選條件</div>
-        <form action="" onSubmit={handleSubmit}>
-          <div>
-            日期：<input type="date" id="searchingDate" onChange={handleDateCondition} />
-            <select id="manySearchingDate" onChange={handleManyDayCondition}>
-              <option value="1">當日</option>
-              <option value="0">不指定</option>
-            </select>
-          </div>
-          <div>
-            尋找：<input type="text" placeholder="輸入關鍵字" onChange={handleChangeKeywords} />
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div>
-              類型：
-              <select onChange={handleTypeCondition}>
-                <option value="">全部類型</option>
-                <option value="展覽">展覽</option>
-                <option value="講座">講座</option>
-                <option value="表演藝術">表演藝術</option>
-                <option value="電影">電影</option>
-                <option value="城市生活圈">城市生活圈</option>
-              </select>
-            </div>
-            <input type="submit" value="查詢" style={{ fontSize: 'initial' }} />
-          </div>
-        </form>
-      </div>
+      <SearchingArea
+        handleSubmit={handleSubmit}
+        handleDateCondition={handleDateCondition}
+        handleManyDayCondition={handleManyDayCondition}
+        handleChangeKeywords={handleChangeKeywords}
+        handleTypeCondition={handleTypeCondition} />
       <div className="homepage-content">
         <div className="title">
-          當日活動
+          <div> 當日活動</div>
+          <div> 共 {mydata.length} 筆</div>
         </div>
-        <TodayEvent mydata={mydata} />
-        {/* <div className="title">本月活動</div> */}
+        <TodayEvent mydata={onePageData} />
       </div>
+      <PageNumConponent
+        nowPage={nowPage}
+        handleChangePage={handleChangePage}
+        PAGE_ARRAY={PAGE_ARRAY}
+      />
       <footer>資料來源：政府資料開放平台 DATA.GOV.TW - 臺北市文化快遞資訊</footer>
     </div>
   )

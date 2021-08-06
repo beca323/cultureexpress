@@ -1,4 +1,3 @@
-
 // const url = "https://cors-anywhere.herokuapp.com/https://cultureexpress.taipei/xml_json/opendataCH.json"
 const url = 'https://beca323.github.io/hi/culture.json'
 export const getData = () => fetch(url)
@@ -14,13 +13,4 @@ export const getData = () => fetch(url)
     }, [])
   })
 
-
-// const filteredArr = arr.reduce((acc, current) => {
-//   const x = acc.find(item => item.id === current.id)
-//   if (!x) {
-//     return acc.concat([current])
-//   } else {
-//     return acc
-//   }
-// }, [])
 
