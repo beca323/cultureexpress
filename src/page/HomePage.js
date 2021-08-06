@@ -26,11 +26,10 @@ export default function HomePage() {
   const PAGE_ARRAY = [...Array(PAGE_COUNTS).keys()]
 
   const handleChangePage = (e) => {
-    // const clickNumber = e.target.innerHTML - 1
     const clickNumber = e.target.innerHTML - 1
     setNowPage(clickNumber)
-    setOnePageData(mydata.slice(0, 6))
-    console.log(mydata.slice(0, 6))
+    setOnePageData(mydata.slice(clickNumber * ONE_PAGE_COUNTS, 6 + clickNumber * ONE_PAGE_COUNTS))
+    document.documentElement.scrollTop = 500
   }
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -48,7 +47,7 @@ export default function HomePage() {
         setMydata([...events])
         return [...events]
       }).then((result) => {
-        setOnePageData(result.slice(0, 6))
+        setOnePageData(result.slice(0, result.length > 6 ? 6 : result.length))
       })
     } else {
       getData().then(data => {

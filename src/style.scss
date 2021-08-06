@@ -20,6 +20,7 @@ $main-text-color: #f4f4e1;
   text-decoration: none;
   font-family: Arial, Helvetica, sans-serif;
   color: #f4f4e1;
+  scroll-behavior: smooth;
 }
 *::selection {
   background-color: $main-text-color;
